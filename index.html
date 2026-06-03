@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Évaluation d'Habilitation HT/THT - STOS Sonelgaz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&display=swap'); 
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* slate-100 */
+        }
+        .font-arabic {
+            font-family: 'Tajawal', sans-serif;
+        }
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Personnalisation des boutons radio */
+        .radio-custom:checked + label {
+            background-color: #eff6ff;
+            border-color: #0072ce;
+            box-shadow: 0 4px 6px -1px rgba(0, 114, 206, 0.1);
+        }
+        .radio-custom:checked + label .radio-circle {
+            border-color: #0072ce;
+            background-color: #0072ce;
+        }
+        
+        /* Personnalisation de la scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px;}
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Couleurs institutionnelles Sonelgaz */
+        .bg-sonelgaz-blue { background-color: #0072ce; }
+        .text-sonelgaz-blue { color: #0072ce; }
+        .border-sonelgaz-blue { border-color: #0072ce; }
+        .bg-sonelgaz-orange { background-color: #f39200; }
+        .text-sonelgaz-orange { color: #f39200; }
+        .border-sonelgaz-orange { border-color: #f39200; }
+        
+        /* Tab styles */
+        .tab-active { border-bottom: 3px solid #0072ce; color: #0072ce; font-weight: 700; }
+        .tab-inactive { border-bottom: 3px solid transparent; color: #64748b; font-weight: 500; }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen flex flex-col selection:bg-sonelgaz-orange selection:text-white">
+
+    <header class="bg-white border-b-4 border-sonelgaz-blue shadow-sm py-3 px-4 sm:px-6 flex justify-between items-center sticky top-0 z-30">
+        <div class="flex items-center gap-3 sm:gap-5">
+            <!-- LOGO : L'application cherchera l'image logo.png dans le même dossier -->
+            <div class="relative shrink-0 flex items-center justify-center">
+                <!-- Image prioritaire -->
+                <img src="logo.png" alt="Logo Sonelgaz" id="main-logo" class="h-10 sm:h-14 object-contain z-10" 
+                     onerror="this.onerror=null; this.style.display='none'; document.getElementById('fallback-logo').style.display='flex';">
+                <!-- Logo de secours généré en CSS si l'image est absente -->
+                <div id="fallback-logo" style="display:none;" class="flex items-center justify-center bg-sonelgaz-orange text-white font-bold rounded-lg w-12 h-12 sm:w-16 sm:h-16 shadow-inner relative overflow-hidden">
+                    <span class="text-4xl sm:text-5xl italic font-black transform -skew-x-12">4</span>
+                </div>
+            </div>
+            
+            <div class="flex flex-col justify-center">
+                <span class="text-sonelgaz-blue font-bold text-sm sm:text-lg md:text-xl font-arabic leading-tight tracking-wide">
+                    الشركة الجزائرية للكهرباء و الغاز - نقل الكهرباء و مسير المنظومة
+                </span>
+                <span class="text-sonelgaz-blue font-semibold text-[10px] sm:text-xs md:text-sm mt-0.5 leading-tight">
+                    Société algérienne de l'électricité et du gaz - Transport électricité et opérateur système
+                </span>
+            </div>
+        </div>
+        
+        <!-- Bouton Administrateur -->
+        <button onclick="showAdminLogin()" class="ml-4 text-slate-400 hover:text-sonelgaz-blue transition flex flex-col items-center shrink-0 p-2 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200">
+            <i class="fas fa-lock text-lg"></i>
+            <span class="text-[10px] font-bold mt-1 tracking-widest">ADMIN</span>
+        </button>
+    </header>
+
+    <main id="app-container" class="flex-grow flex items-center justify-center p-4 sm:p-6 w-full max-w-6xl mx-auto">
+        <!-- Le contenu sera injecté ici via JavaScript -->
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 py-4 text-center text-xs sm:text-sm text-gray-500 font-medium">
+        &copy; 2026 - Plateforme d'Évaluation Pédagogique - STOS Sonelgaz | Confidentiel
+    </footer>
+
+    <script>
+        const wilayas = [
+            "01 - Adrar", "02 - Chlef", "03 - Laghouat", "04 - Oum El Bouaghi", "05 - Batna", "06 - Béjaïa", "07 - Biskra", "08 - Béchar", "09 - Blida", "10 - Bouira",
+            "11 - Tamanrasset", "12 - Tébessa", "13 - Tlemcen", "14 - Tiaret", "15 - Tizi Ouzou", "16 - Alger", "17 - Djelfa", "18 - Jijel", "19 - Sétif", "20 - Saïda",
+            "21 - Skikda", "22 - Sidi Bel Abbès", "23 - Annaba", "24 - Guelma", "25 - Constantine", "26 - Médéa", "27 - Mostaganem", "28 - M'Sila", "29 - Mascara", "30 - Ouargla",
+            "31 - Oran", "32 - El Bayadh", "33 - Illizi", "34 - Bordj Bou Arreridj", "35 - Boumerdès", "36 - El Tarf", "37 - Tindouf", "38 - Tissemsilt", "39 - El Oued", "40 - Khenchela",
+            "41 - Souk Ahras", "42 - Tipaza", "43 - Mila", "44 - Aïn Defla", "45 - Naâma", "46 - Aïn Témouchent", "47 - Ghardaïa", "48 - Relizane", "49 - Timimoun", "50 - Bordj Badji Mokhtar",
+            "51 - Ouled Djellal", "52 - Béni Abbès", "53 - In Salah", "54 - In Guezzam", "55 - Touggourt", "56 - Djanet", "57 - El M'Ghair", "58 - El Meniaa"
+        ];
+
+        const questionsData = [
+            // PARTIE 1 : Procédures et Administratif (OT, AT, Fiches)
+            {
+                theme: "Procédure & Ordre de Travail",
+                type: "Épreuve Écrite",
+                question: "Une équipe se présente pour une intervention urgente. Le Chef de Travaux (CDT) n'a pas d'Ordre de Travail (OT) formel. Que doit faire le Chef de Consignation (CC) ?",
+                options: [
+                    "Accepter l'intervention si la hiérarchie confirme par téléphone.",
+                    "Refuser catégoriquement toute manœuvre de consignation jusqu'à la présentation d'un OT valide.",
+                    "Rédiger lui-même l'OT pour dépanner l'équipe.",
+                    "Délivrer l'AT avec une mention 'OT manquant'."
+                ],
+                correctIndex: 1,
+                justification: "L'OT est le document juridique de base (CDP). Sans lui, l'intervention n'existe pas légalement. Refuser est une obligation de sécurité."
+            },
+            {
+                theme: "Fiche de Manœuvre",
+                type: "Épreuve Écrite",
+                question: "Lors de l'exécution d'une consignation, le CC s'aperçoit que sa Fiche de Manœuvre comporte une erreur sur le nom d'un sectionneur. Que fait-il ?",
+                options: [
+                    "Il corrige mentalement l'erreur et poursuit sa manœuvre.",
+                    "Il rature le nom, signe à côté et continue.",
+                    "Il arrête l'opération, annule la fiche, rédige une nouvelle fiche correcte et reprend.",
+                    "Il appelle le Dispatching pour prévenir de l'erreur typographique."
+                ],
+                correctIndex: 2,
+                justification: "Une Fiche de Manœuvre fausse doit être immédiatement annulée. Toute interprétation ou 'correction mentale' est la cause principale des fausses manœuvres."
+            },
+            {
+                theme: "Communication (Collationnement)",
+                type: "Épreuve Écrite",
+                question: "Le Dispatching ordonne l'ouverture d'une ligne. Le Chef de Poste note sur son brouillon et répond : « C'est noté, j'ouvre la ligne ». Quelle règle vitale manque-t-il ?",
+                options: [
+                    "Il a oublié de dire 'Terminé'.",
+                    "Il n'a pas utilisé le registre officiel.",
+                    "La relecture intégrale (collationnement) par l'agent et l'accord d'exécution du Dispatcher.",
+                    "L'envoi d'un message d'autorisation électronique."
+                ],
+                correctIndex: 2,
+                justification: "Le collationnement est absolu. L'ordre n'est pas valide tant que le Dispatcher n'a pas dit 'Bon collationnement, vous pouvez exécuter'."
+            },
+            {
+                theme: "Habilitations",
+                type: "Épreuve Écrite",
+                question: "Le CDT est bloqué dans les embouteillages. Il envoie un de ses exécutants (habilité H1) récupérer et signer l'Autorisation de Travail (AT). Décision du CC ?",
+                options: [
+                    "Il lui remet l'AT pour gagner du temps.",
+                    "Il remet l'AT mais garde la carte H1 en caution.",
+                    "Il accompagne l'exécutant sur le terrain.",
+                    "Il refuse catégoriquement. L'AT ne peut être signée que par le CDT désigné sur l'OT."
+                ],
+                correctIndex: 3,
+                justification: "L'AT est un transfert de responsabilité. Un exécutant H1 n'a pas les compétences pour valider les limites de la zone de sécurité (Rôle H2 exclusif)."
+            },
+            {
+                theme: "Limites de l'AT & Co-activité",
+                type: "Épreuve Écrite",
+                question: "Le chantier est fini, l'Avis de Fin de Travail est signé. Le CC referme immédiatement les sectionneurs d'aiguillage SANS attendre le message du Dispatching. Infraction ?",
+                options: [
+                    "Fausse manœuvre grave. L'ouvrage appartient au CRC, le modifier sans ordre désorganise le réseau.",
+                    "Aucune infraction, il accélère la reprise de service.",
+                    "Il devait d'abord fermer le disjoncteur.",
+                    "Il a oublié de prévenir le Chef de Travaux."
+                ],
+                correctIndex: 0,
+                justification: "Restituer un ouvrage (Fin d'AT) et l'exploiter (Fermeture) sont deux choses distinctes. L'initiative de renvoi de tension appartient exclusivement au Dispatching."
+            },
+            // PARTIE 2 : Incidents et Cas Pratiques
+            {
+                theme: "Incident Disjoncteur (SF6)",
+                type: "Simulation Pratique",
+                question: "Disjoncteur 400 kV - Alarme 'Baisse pression SF6 - 2ème Stade (Verrouillage)'. Un défaut survient sur la ligne. Que faire ?",
+                options: [
+                    "Ouvrir le disjoncteur lentement en manuel.",
+                    "Le disjoncteur est verrouillé. Il faut isoler la travée via la protection défaillance disjoncteur (CBF) en ouvrant les équipements encadrants.",
+                    "Fermer les sectionneurs de terre.",
+                    "Forcer la commande électrique."
+                ],
+                correctIndex: 1,
+                justification: "Au 2ème stade, le gaz ne peut plus éteindre l'arc. Le disjoncteur est bloqué pour éviter l'explosion. Ne JAMAIS tenter de l'ouvrir."
+            },
+            {
+                theme: "Incident Transformateur",
+                type: "Simulation Pratique",
+                question: "Alarme 'Température huile Transfo Très Haute'. Les ventilateurs sont à l'arrêt total (Perte ONAF). Action prioritaire ?",
+                options: [
+                    "Arroser le transformateur à l'eau.",
+                    "Mettre le régleur à la position minimale.",
+                    "Avertir le Dispatching et demander un délestage immédiat de ce transformateur pour réduire sa charge.",
+                    "Attendre la protection thermique."
+                ],
+                correctIndex: 2,
+                justification: "Sans ventilation, le transfo perd 30 à 40% de sa capacité. Il faut délester la charge le traversant pour éviter son déclenchement total."
+            },
+            {
+                theme: "Gestion de Blackout",
+                type: "Simulation Pratique",
+                question: "Blackout (Zéro tension au poste). Quelle est la toute première action ?",
+                options: [
+                    "Attendre le retour du courant.",
+                    "Ouvrir impérativement tous les disjoncteurs (mise à plat) pour permettre une reconstitution pas-à-pas.",
+                    "Démarrer les transformateurs.",
+                    "Tenter de fermer les lignes d'interconnexion."
+                ],
+                correctIndex: 1,
+                justification: "La mise à plat évite un courant d'enclenchement (Inrush) massif au retour de la tension, qui ferait tout redéclencher immédiatement."
+            },
+            {
+                theme: "Sauvetage & Incendie",
+                type: "Simulation Pratique",
+                question: "Incendie sur transformateur. Le système déluge est inopérant. Que faire en premier ?",
+                options: [
+                    "Utiliser une lance à eau immédiatement.",
+                    "Attendre les pompiers sans intervenir.",
+                    "S'assurer techniquement et visuellement que le transfo est totalement HORS TENSION avant de lutter contre le feu.",
+                    "Entrer avec un extincteur à poudre."
+                ],
+                correctIndex: 2,
+                justification: "Règle absolue : Ne jamais projeter d'eau sur un équipement électrique dont la séparation des sources n'est pas certifiée (risque mortel)."
+            },
+            {
+                theme: "Perte VCC (Courant Continu)",
+                type: "Simulation Pratique",
+                question: "Perte totale du courant continu 127 VCC au poste. Quel est le risque majeur ?",
+                options: [
+                    "Perte de l'éclairage des bureaux.",
+                    "Le système SCADA affichera des couleurs fausses.",
+                    "Perte totale du contrôle-commande et des protections. Si un défaut survient, les disjoncteurs ne s'ouvriront pas (risque d'explosion).",
+                    "Décharge des téléphones du poste."
+                ],
+                correctIndex: 2,
+                justification: "Le VCC alimente les relais et les bobines de déclenchement. Sans lui, le poste est paralysé et aveugle face aux courts-circuits."
+            }
+        ];
+
+        let appState = {
+            mode: 'declaratif', // 'declaratif' ou 'anonyme'
+            candidateId: "",
+            nom: "",
+            prenom: "",
+            wilaya: "",
+            currentQuestion: 0,
+            answers: [],
+            score: 0
+        };
+
+        // Stockage des résultats pour le mode Administrateur
+        window.allCandidatesResults = window.allCandidatesResults || [];
+
+        const appContainer = document.getElementById('app-container');
+
+        function renderIntro() {
+            const randomId = "CAND-" + Math.floor(10000 + Math.random() * 90000);
+            
+            let wilayaOptions = '<option value="">-- Sélectionnez votre wilaya --</option>';
+            wilayas.forEach(w => { wilayaOptions += `<option value="${w}">${w}</option>`; });
+
+            appContainer.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden fade-in border border-slate-200">
+                    <div class="bg-slate-800 p-8 sm:p-10 text-white text-center relative border-b-4 border-sonelgaz-blue">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-sonelgaz-blue rounded-bl-full opacity-20"></div>
+                        <i class="fas fa-file-signature text-5xl mb-4 text-sonelgaz-orange drop-shadow-md"></i>
+                        <h2 class="text-3xl font-bold font-arabic mb-1">منصة التقييم المهني</h2>
+                        <h3 class="text-xl font-bold tracking-wide">Test d'Habilitation HT/THT</h3>
+                        <p class="text-slate-300 mt-3 text-sm">Fautes de Procédures • Consignation • Études de Cas</p>
+                    </div>
+
+                    <div class="p-6 sm:p-10">
+                        <!-- Navigation Tabs -->
+                        <div class="flex border-b border-slate-200 mb-8">
+                            <button onclick="switchMode('declaratif')" id="tab-declaratif" class="w-1/2 py-3 text-sm sm:text-base transition-colors ${appState.mode === 'declaratif' ? 'tab-active' : 'tab-inactive'}">
+                                <i class="fas fa-user-check mr-2"></i> Mode Déclaratif
+                            </button>
+                            <button onclick="switchMode('anonyme')" id="tab-anonyme" class="w-1/2 py-3 text-sm sm:text-base transition-colors ${appState.mode === 'anonyme' ? 'tab-active' : 'tab-inactive'}">
+                                <i class="fas fa-user-secret mr-2"></i> Mode Anonyme
+                            </button>
+                        </div>
+
+                        <!-- Formulaires -->
+                        <div id="form-declaratif" class="${appState.mode === 'declaratif' ? 'block' : 'hidden'} space-y-5 fade-in">
+                            <p class="text-sm text-slate-500 mb-4"><i class="fas fa-info-circle text-sonelgaz-blue"></i> Vos résultats seront rattachés à votre profil pour le suivi administratif.</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Nom</label>
+                                    <input type="text" id="input-nom" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-sonelgaz-blue outline-none transition" placeholder="Votre nom">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Prénom</label>
+                                    <input type="text" id="input-prenom" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-sonelgaz-blue outline-none transition" placeholder="Votre prénom">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Direction / Wilaya</label>
+                                <select id="input-wilaya" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-sonelgaz-blue outline-none transition text-slate-700">
+                                    ${wilayaOptions}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="form-anonyme" class="${appState.mode === 'anonyme' ? 'block' : 'hidden'} space-y-5 fade-in">
+                            <div class="bg-orange-50 border-l-4 border-sonelgaz-orange p-5 rounded-r-lg mb-6">
+                                <p class="text-sm text-slate-700 leading-relaxed">
+                                    <strong>Mode Entraînement :</strong> Votre identité ne sera pas enregistrée. Conservez l'identifiant ci-dessous si vous souhaitez retrouver votre score auprès de l'administrateur.
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">ID Généré automatiquement</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <i class="fas fa-fingerprint text-slate-400"></i>
+                                    </div>
+                                    <input type="text" id="input-id" value="${randomId}" readonly class="w-full pl-10 pr-4 py-3 bg-slate-100 border border-slate-200 text-slate-600 font-mono font-bold text-lg rounded-lg outline-none cursor-not-allowed">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Erreur validation -->
+                        <p id="start-error" class="text-red-500 text-sm font-bold mt-4 hidden text-center"><i class="fas fa-exclamation-triangle"></i> Veuillez remplir tous les champs requis.</p>
+
+                        <button onclick="startExam()" class="mt-8 w-full bg-sonelgaz-blue hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-xl transition duration-300 flex justify-center items-center gap-3 shadow-lg shadow-blue-500/30 transform hover:-translate-y-1">
+                            <span class="text-lg">Commencer l'Évaluation</span> <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function switchMode(mode) {
+            appState.mode = mode;
+            renderIntro();
+        }
+
+        function startExam() {
+            if (appState.mode === 'declaratif') {
+                const nom = document.getElementById('input-nom').value.trim();
+                const prenom = document.getElementById('input-prenom').value.trim();
+                const wilaya = document.getElementById('input-wilaya').value;
+                
+                if (!nom || !prenom || !wilaya) {
+                    document.getElementById('start-error').classList.remove('hidden');
+                    return;
+                }
+                appState.nom = nom.toUpperCase();
+                appState.prenom = prenom.charAt(0).toUpperCase() + prenom.slice(1);
+                appState.wilaya = wilaya;
+                appState.candidateId = `${nom.substring(0,3).toUpperCase()}-${Math.floor(100+Math.random()*900)}`;
+            } else {
+                appState.candidateId = document.getElementById('input-id').value;
+                appState.nom = "ANONYME";
+                appState.prenom = "";
+                appState.wilaya = "Non spécifiée";
+            }
+
+            // Réinitialisation des scores
+            appState.currentQuestion = 0;
+            appState.answers = [];
+            appState.score = 0;
+            
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questionsData[appState.currentQuestion];
+            const progress = ((appState.currentQuestion) / questionsData.length) * 100;
+            
+            const typeIcon = q.type === "Épreuve Écrite" ? "fa-pen-to-square text-sonelgaz-blue" : "fa-triangle-exclamation text-sonelgaz-orange";
+            const typeBg = q.type === "Épreuve Écrite" ? "bg-blue-50 text-sonelgaz-blue border-blue-200" : "bg-orange-50 text-sonelgaz-orange border-orange-200";
+
+            let optionsHtml = '';
+            q.options.forEach((opt, index) => {
+                optionsHtml += `
+                    <div class="relative mb-3 fade-in" style="animation-delay: ${index * 0.1}s">
+                        <input type="radio" name="q-option" id="opt-${index}" value="${index}" class="radio-custom sr-only peer" onchange="enableNextBtn()">
+                        <label for="opt-${index}" class="flex items-start p-4 md:p-5 bg-white border-2 border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50 transition-all peer-focus:ring-2 peer-focus:ring-sonelgaz-blue shadow-sm">
+                            <div class="radio-circle w-6 h-6 border-2 border-slate-300 rounded-full mr-4 mt-0.5 flex-shrink-0 flex items-center justify-center transition-colors">
+                                <div class="w-2.5 h-2.5 bg-white rounded-full"></div>
+                            </div>
+                            <span class="text-slate-700 font-medium text-sm md:text-base leading-relaxed">${opt}</span>
+                        </label>
+                    </div>
+                `;
+            });
+
+            appContainer.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden fade-in border border-slate-200 flex flex-col h-[85vh] sm:h-auto max-h-[850px]">
+                    
+                    <!-- Progress Header -->
+                    <div class="p-5 border-b border-slate-100 shrink-0 bg-slate-50">
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Candidat</span>
+                                <span class="text-sm font-bold text-slate-700">
+                                    ${appState.mode === 'declaratif' ? `<i class="fas fa-user text-sonelgaz-blue mr-1"></i> ${appState.nom} ${appState.prenom}` : `<i class="fas fa-user-secret text-slate-500 mr-1"></i> ${appState.candidateId}`}
+                                </span>
+                            </div>
+                            <span class="text-sm font-bold text-slate-700 bg-white px-4 py-1.5 rounded-full shadow-sm border border-slate-200">
+                                Question ${appState.currentQuestion + 1} / ${questionsData.length}
+                            </span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                            <div class="bg-sonelgaz-orange h-2 rounded-full transition-all duration-500 ease-out" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Question Body -->
+                    <div class="p-6 sm:p-8 overflow-y-auto flex-grow custom-scrollbar bg-slate-50">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs font-bold border ${typeBg} mb-6 shadow-sm">
+                            <i class="fas ${typeIcon}"></i> ${q.theme}
+                        </div>
+                        <h2 class="text-lg md:text-xl font-bold text-slate-800 mb-8 leading-relaxed border-l-4 border-sonelgaz-blue pl-4">
+                            ${q.question}
+                        </h2>
+                        
+                        <div class="options-container space-y-3">
+                            ${optionsHtml}
+                        </div>
+                    </div>
+
+                    <!-- Footer Action -->
+                    <div class="p-5 border-t border-slate-100 bg-white shrink-0 flex justify-end">
+                        <button id="next-btn" onclick="submitAnswer()" disabled class="bg-sonelgaz-blue hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-xl transition duration-200 shadow-md flex items-center gap-2">
+                            ${appState.currentQuestion === questionsData.length - 1 ? 'Terminer l\'évaluation <i class="fas fa-flag-checkered"></i>' : 'Valider et continuer <i class="fas fa-arrow-right"></i>'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function enableNextBtn() {
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        function submitAnswer() {
+            const selectedOpt = document.querySelector('input[name="q-option"]:checked');
+            if (!selectedOpt) return;
+
+            const selectedIndex = parseInt(selectedOpt.value);
+            const isCorrect = selectedIndex === questionsData[appState.currentQuestion].correctIndex;
+
+            appState.answers.push({
+                questionIndex: appState.currentQuestion,
+                selected: selectedIndex,
+                isCorrect: isCorrect
+            });
+
+            if (isCorrect) appState.score++;
+
+            appState.currentQuestion++;
+            if (appState.currentQuestion < questionsData.length) {
+                renderQuestion();
+            } else {
+                saveResultAndRender();
+            }
+        }
+
+        function saveResultAndRender() {
+            const percentage = Math.round((appState.score / questionsData.length) * 100);
+            
+            // On enregistre toutes les données pour l'Admin
+            const resultData = {
+                id: appState.candidateId,
+                nom: appState.nom,
+                prenom: appState.prenom,
+                wilaya: appState.wilaya,
+                mode: appState.mode,
+                score: appState.score,
+                total: questionsData.length,
+                percentage: percentage,
+                date: new Date().toLocaleString('fr-FR'),
+                answers: JSON.parse(JSON.stringify(appState.answers)) // Deep copy
+            };
+            window.allCandidatesResults.push(resultData);
+            
+            renderResults();
+        }
+
+        function renderResults() {
+            const percentage = Math.round((appState.score / questionsData.length) * 100);
+            
+            let statusClass, statusText, statusIcon;
+            if (percentage >= 80) {
+                statusClass = "text-green-700 bg-green-50 border-green-500";
+                statusText = "Avis Favorable : Maîtrise des procédures CGE.";
+                statusIcon = "fa-check-double";
+            } else if (percentage >= 60) {
+                statusClass = "text-sonelgaz-orange bg-orange-50 border-sonelgaz-orange";
+                statusText = "Avis Réservé : Connaissances perfectibles, révision CGE conseillée.";
+                statusIcon = "fa-triangle-exclamation";
+            } else {
+                statusClass = "text-red-700 bg-red-50 border-red-500";
+                statusText = "Avis Défavorable : Risque d'exploitation et fausses manœuvres détecté.";
+                statusIcon = "fa-skull-crossbones";
+            }
+
+            let correctionsHtml = '';
+            appState.answers.forEach((ans, idx) => {
+                const q = questionsData[ans.questionIndex];
+                const isCorrect = ans.isCorrect;
+                
+                const cardBorder = isCorrect ? "border-green-200" : "border-red-200";
+                const iconHtml = isCorrect 
+                    ? `<div class="bg-green-100 text-green-600 w-10 h-10 flex items-center justify-center rounded-full shrink-0 shadow-sm"><i class="fas fa-check"></i></div>` 
+                    : `<div class="bg-red-100 text-red-600 w-10 h-10 flex items-center justify-center rounded-full shrink-0 shadow-sm"><i class="fas fa-xmark text-lg"></i></div>`;
+                
+                correctionsHtml += `
+                    <div class="mb-5 border ${cardBorder} rounded-xl bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                        <div class="p-5 flex gap-4">
+                            ${iconHtml}
+                            <div class="flex-grow">
+                                <h4 class="font-bold text-slate-800 text-sm md:text-base mb-3 leading-snug">${q.question}</h4>
+                                <div class="text-sm mb-4 space-y-2 p-4 rounded-lg bg-slate-50 border border-slate-100">
+                                    <p class="${isCorrect ? 'hidden' : 'text-red-600 font-medium'} flex items-start gap-2">
+                                        <i class="fas fa-times-circle mt-1"></i> <span><strong>Erreur commise :</strong> ${q.options[ans.selected]}</span>
+                                    </p>
+                                    <p class="text-green-700 font-medium flex items-start gap-2">
+                                        <i class="fas fa-check-circle mt-1"></i> <span><strong>Bonne pratique :</strong> ${q.options[q.correctIndex]}</span>
+                                    </p>
+                                </div>
+                                <div class="bg-blue-50 p-4 border-l-4 border-sonelgaz-blue text-sm text-blue-900 rounded-r-lg">
+                                    <h5 class="font-bold flex items-center gap-2 mb-1 text-sonelgaz-blue"><i class="fas fa-book-open"></i> Référence CGE / Sécurité</h5>
+                                    <p class="leading-relaxed opacity-90">${q.justification}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const identityHtml = appState.mode === 'declaratif' 
+                ? `<p class="text-slate-300 mt-2 text-sm">Candidat : <span class="font-bold text-white">${appState.nom} ${appState.prenom}</span> | ${appState.wilaya}</p>`
+                : `<p class="text-slate-300 mt-2 text-sm">Candidat : <span class="font-mono font-bold bg-slate-800 px-2 py-1 rounded border border-slate-600">${appState.candidateId}</span> (Anonyme)</p>`;
+
+            appContainer.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden fade-in border border-slate-200 my-4">
+                    <div class="bg-slate-900 p-8 text-white text-center relative border-b-4 border-sonelgaz-orange">
+                        <button onclick="renderIntro()" class="absolute top-4 left-4 text-slate-400 hover:text-white transition flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold border border-slate-700 hover:border-slate-500">
+                            <i class="fas fa-home"></i> NOUVEAU TEST
+                        </button>
+                        <i class="fas fa-clipboard-check text-5xl mb-4 text-sonelgaz-blue drop-shadow-lg"></i>
+                        <h2 class="text-2xl md:text-3xl font-bold font-arabic mb-1">تقرير التقييم</h2>
+                        <h2 class="text-xl md:text-2xl font-bold">Rapport Pédagogique d'Évaluation</h2>
+                        ${identityHtml}
+                    </div>
+
+                    <div class="p-6 md:p-8 bg-slate-50">
+                        <!-- Score Card -->
+                        <div class="flex flex-col md:flex-row items-center bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 mb-8 gap-8">
+                            <div class="text-center md:text-left shrink-0 md:pr-8 md:border-r border-slate-200">
+                                <h3 class="text-slate-400 font-bold uppercase tracking-widest text-xs mb-2">Score Final</h3>
+                                <div class="text-6xl font-black text-slate-800 tracking-tighter">${appState.score} <span class="text-3xl text-slate-300 font-normal">/ ${questionsData.length}</span></div>
+                            </div>
+                            
+                            <div class="flex-grow w-full">
+                                <div class="flex justify-between mb-2 text-sm font-bold">
+                                    <span class="text-slate-600 uppercase tracking-wider">Taux de Maîtrise</span>
+                                    <span class="text-xl ${percentage >= 80 ? 'text-green-600' : (percentage >= 60 ? 'text-sonelgaz-orange' : 'text-red-600')}">${percentage}%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-4 mb-4 shadow-inner overflow-hidden">
+                                    <div class="${percentage >= 80 ? 'bg-green-500' : (percentage >= 60 ? 'bg-sonelgaz-orange' : 'bg-red-500')} h-4 rounded-full transition-all duration-1000" style="width: ${percentage}%"></div>
+                                </div>
+                                <div class="text-sm font-semibold border-l-4 pl-4 py-3 ${statusClass} rounded-r-lg">
+                                    <i class="fas ${statusIcon} mr-2 text-lg"></i> ${statusText}
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3"><i class="fas fa-microscope text-sonelgaz-blue text-2xl"></i> Détail des erreurs et Corrections</h3>
+                        <div class="space-y-2">
+                            ${correctionsHtml}
+                        </div>
+
+                        <div class="mt-10 text-center">
+                            <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-4 px-8 rounded-xl transition duration-200 shadow-lg flex items-center justify-center gap-3 mx-auto text-base">
+                                <i class="fas fa-print"></i> Sauvegarder en PDF / Imprimer
+                            </button>
+                            <p class="text-xs text-slate-500 mt-4">Ce rapport est généré localement. Imprimez-le pour l'archiver dans le dossier du candidat.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            window.scrollTo(0, 0);
+        }
+
+        function showAdminLogin() {
+            appContainer.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden fade-in border border-slate-200 p-8 text-center relative">
+                    <button onclick="renderIntro()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 bg-slate-100 p-2 rounded-lg">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="w-20 h-20 bg-slate-800 text-sonelgaz-orange rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border-4 border-slate-100">
+                        <i class="fas fa-user-shield text-3xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800 mb-2">Espace Superviseur</h2>
+                    <p class="text-sm text-slate-500 mb-8">Accès restreint STOS</p>
+                    
+                    <div class="mb-6 text-left">
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Code d'accès</label>
+                        <input type="password" id="admin-password" class="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sonelgaz-blue outline-none transition text-center text-2xl tracking-[0.3em]" placeholder="••••••••">
+                        <p id="admin-error" class="text-red-500 text-xs font-bold mt-2 hidden text-center"><i class="fas fa-exclamation-triangle"></i> Code incorrect</p>
+                    </div>
+                    
+                    <button onclick="verifyAdmin()" class="w-full bg-sonelgaz-blue hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 flex justify-center items-center gap-2 shadow-md">
+                        <i class="fas fa-unlock"></i> Connexion
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('admin-password').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') verifyAdmin();
+            });
+        }
+
+        function verifyAdmin() {
+            const pass = document.getElementById('admin-password').value;
+            if (pass === '15041978') {
+                renderAdminDashboard();
+            } else {
+                const errorEl = document.getElementById('admin-error');
+                errorEl.classList.remove('hidden');
+                document.getElementById('admin-password').value = '';
+                errorEl.classList.add('animate-bounce');
+                setTimeout(() => errorEl.classList.remove('animate-bounce'), 1000);
+            }
+        }
+
+        function renderAdminDashboard() {
+            let tableRows = '';
+            
+            if (window.allCandidatesResults.length === 0) {
+                tableRows = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center text-slate-400 font-medium">
+                            <i class="fas fa-inbox text-4xl mb-4 text-slate-200 block"></i>
+                            Aucun test n'a encore été passé lors de cette session.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                const sortedResults = [...window.allCandidatesResults].reverse();
+                
+                sortedResults.forEach((res, index) => {
+                    let badgeClass = res.percentage >= 80 ? "bg-green-100 text-green-800 border-green-200" 
+                                   : (res.percentage >= 60 ? "bg-orange-100 text-orange-800 border-orange-200" : "bg-red-100 text-red-800 border-red-200");
+                    
+                    // Identité d'affichage
+                    const displayName = res.mode === 'declaratif' ? `<span class="font-bold text-slate-800">${res.nom} ${res.prenom}</span><br><span class="text-xs text-slate-500">${res.wilaya}</span>` 
+                                                                  : `<span class="font-mono font-bold text-sonelgaz-blue bg-blue-50 px-2 py-0.5 rounded border border-blue-100">${res.id}</span>`;
+                    
+                    tableRows += `
+                        <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+                            <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-500">${res.date.split(' ')[0]}<br>${res.date.split(' ')[1]}</td>
+                            <td class="px-6 py-4">${displayName}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-slate-700">${res.score} / ${res.total}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full border ${badgeClass}">
+                                    ${res.percentage}%
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <button onclick="viewCandidateDetails(${window.allCandidatesResults.length - 1 - index})" class="text-sonelgaz-blue hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                                    <i class="fas fa-search-chart mr-1"></i> Analyser
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            appContainer.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl overflow-hidden fade-in border border-slate-200 flex flex-col h-[90vh]">
+                    
+                    <div class="bg-slate-900 p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-center text-white shrink-0 border-b-4 border-sonelgaz-orange gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700"><i class="fas fa-chart-line text-2xl text-sonelgaz-orange"></i></div>
+                            <div>
+                                <h2 class="text-xl sm:text-2xl font-bold tracking-wide">Tableau de Bord Administrateur</h2>
+                                <p class="text-slate-400 text-xs sm:text-sm">Suivi des habilitations et analyse des fausses manœuvres</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="clearResults()" class="bg-slate-800 hover:bg-red-600 hover:text-white text-slate-300 border border-slate-700 px-4 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2">
+                                <i class="fas fa-trash-alt"></i> Vider
+                            </button>
+                            <button onclick="renderIntro()" class="bg-sonelgaz-blue hover:bg-blue-600 text-white shadow-md px-4 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2">
+                                <i class="fas fa-sign-out-alt"></i> Quitter
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-orange-50 text-sonelgaz-orange p-2 text-center text-xs font-bold shrink-0 flex justify-center items-center gap-2 border-b border-orange-100">
+                        <i class="fas fa-exclamation-triangle"></i> Données de session locale : Si vous fermez le navigateur, ces résultats seront perdus.
+                    </div>
+
+                    <div class="p-0 overflow-auto flex-grow bg-slate-50">
+                        <table class="min-w-full divide-y divide-slate-200">
+                            <thead class="bg-slate-100 sticky top-0 shadow-sm z-10">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Identité / Wilaya</th>
+                                    <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Score</th>
+                                    <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Taux</th>
+                                    <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-100">
+                                ${tableRows}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function viewCandidateDetails(index) {
+            const cand = window.allCandidatesResults[index];
+            
+            // Extraction des erreurs et thèmes à réviser
+            let errorsHtml = '';
+            let themesFailed = new Set();
+
+            cand.answers.forEach(ans => {
+                if (!ans.isCorrect) {
+                    const q = questionsData[ans.questionIndex];
+                    themesFailed.add(q.theme);
+                    errorsHtml += `
+                        <div class="mb-3 p-4 bg-red-50 border border-red-100 rounded-lg">
+                            <p class="text-sm font-bold text-slate-800 mb-2">${q.question}</p>
+                            <p class="text-xs text-red-600 mb-1"><i class="fas fa-times mr-1"></i> Réponse donnée : ${q.options[ans.selected]}</p>
+                            <p class="text-xs text-green-700 font-semibold"><i class="fas fa-check mr-1"></i> Requise : ${q.options[q.correctIndex]}</p>
+                        </div>
+                    `;
+                }
+            });
+
+            if (errorsHtml === '') {
+                errorsHtml = `<div class="p-4 bg-green-50 text-green-700 rounded-lg text-center font-bold border border-green-200"><i class="fas fa-award text-2xl block mb-2"></i> Sans faute ! Excellente maîtrise.</div>`;
+            }
+
+            let themesHtml = '';
+            if (themesFailed.size > 0) {
+                themesFailed.forEach(t => {
+                    themesHtml += `<span class="inline-block bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1 rounded-full mr-2 mb-2"><i class="fas fa-book mr-1"></i> ${t}</span>`;
+                });
+            } else {
+                themesHtml = `<span class="text-sm text-slate-500 italic">Aucune lacune détectée.</span>`;
+            }
+
+            const displayName = cand.mode === 'declaratif' ? `${cand.nom} ${cand.prenom}` : `Anonyme (${cand.id})`;
+            const location = cand.mode === 'declaratif' ? cand.wilaya : "N/A";
+
+            appContainer.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden fade-in border border-slate-200 h-[85vh] flex flex-col">
+                    <div class="bg-slate-100 p-4 border-b border-slate-200 flex items-center justify-between shrink-0">
+                        <button onclick="renderAdminDashboard()" class="text-slate-500 hover:text-slate-800 font-bold text-sm flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-slate-300 shadow-sm">
+                            <i class="fas fa-arrow-left"></i> Retour à la liste
+                        </button>
+                        <span class="font-mono text-xs text-slate-400">Rapport n°${cand.id}</span>
+                    </div>
+
+                    <div class="p-6 sm:p-8 overflow-y-auto flex-grow custom-scrollbar bg-slate-50">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
+                                <h3 class="text-2xl font-bold text-slate-800 mb-1"><i class="fas fa-user-circle text-slate-400 mr-2"></i>${displayName}</h3>
+                                <p class="text-slate-500 font-medium mb-4"><i class="fas fa-map-marker-alt text-sonelgaz-orange w-4"></i> ${location}</p>
+                                <div class="mt-auto">
+                                    <h4 class="text-xs font-bold uppercase text-slate-400 mb-2">Thèmes identifiés comme critiques (à réviser) :</h4>
+                                    <div>${themesHtml}</div>
+                                </div>
+                            </div>
+                            <div class="bg-slate-800 text-white p-6 rounded-xl border-b-4 border-sonelgaz-orange shadow-sm flex flex-col items-center justify-center text-center">
+                                <div class="text-5xl font-black mb-2">${cand.percentage}%</div>
+                                <div class="text-sm text-slate-300 mb-4">Score : ${cand.score} / ${cand.total}</div>
+                                <div class="text-xs px-3 py-1 rounded-full ${cand.percentage >= 80 ? 'bg-green-500/20 text-green-300' : (cand.percentage >= 60 ? 'bg-orange-500/20 text-orange-300' : 'bg-red-500/20 text-red-300')}">
+                                    ${cand.percentage >= 80 ? 'Avis Favorable' : (cand.percentage >= 60 ? 'Avis Réservé' : 'Avis Défavorable')}
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2"><i class="fas fa-clipboard-list text-sonelgaz-blue mr-2"></i> Journal des erreurs du candidat</h3>
+                        ${errorsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function clearResults() {
+            // Un custom modal au lieu du alert/confirm natif
+            appContainer.insertAdjacentHTML('beforeend', `
+                <div id="delete-modal" class="fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center fade-in">
+                    <div class="bg-white rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl text-center">
+                        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-exclamation-triangle text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">Purger les données ?</h3>
+                        <p class="text-sm text-slate-500 mb-6">Cette action est définitive. Tous les rapports de cette session seront effacés.</p>
+                        <div class="flex gap-3">
+                            <button onclick="document.getElementById('delete-modal').remove()" class="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition">Annuler</button>
+                            <button onclick="confirmClear()" class="w-1/2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-md transition">Oui, effacer</button>
+                        </div>
+                    </div>
+                </div>
+            `);
+        }
+
+        function confirmClear() {
+            window.allCandidatesResults = [];
+            document.getElementById('delete-modal').remove();
+            renderAdminDashboard();
+        }
+
+        // Lancement au chargement de la page
+        renderIntro();
+    </script>
+</body>
+</html>
